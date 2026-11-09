@@ -1,10 +1,24 @@
 #Lets go
 #OMID MOHAMMADI     
 
-from fastapi import FastAPI, status, Path, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import Depends, FastAPI, status, Path, HTTPException
+from pydantic import BaseModel, ConfigDict, Field
 
-app = FastAPI()
+from contextlib import asynccontextmanager
+
+
+from database import Base, engine, get_db, Product
+from sqlalchemy.orm import Session
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Application startup")
+    Base.metadata.create_all(engine)
+    yield  
+    print("Application shutdown")
+
+app = FastAPI(lifespan=lifespan)
 
 
 class ExpenseCreate(BaseModel):
@@ -15,6 +29,8 @@ class ExpenseUpdate(BaseModel):
     amount: float = Field(gt=0)
 
 class ExpenseOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int = Field(gt=0)
     description: str
     amount: float = Field(gt=0)
@@ -30,50 +46,71 @@ expenses = [
 
 
 @app.post("/add-amount", status_code=status.HTTP_201_CREATED, response_model=ExpenseOut)
-def add_amount(expense: ExpenseCreate):
-    new_id = len(expenses) + 1
-    new_expense = {
-        "id": new_id,
-        "description": expense.description,
-        "amount": expense.amount
-    }
+def add_amount(expense: ExpenseCreate, db:Session=Depends(get_db)):
+    # new_id = len(expenses) + 1
+    # new_expense = {
+    #     "id": new_id,
+    #     "description": expense.description,
+    #     "amount": expense.amount
+    # }
+    # expenses.append(new_expense)
+    # return new_expense
 
-    expenses.append(new_expense)
-    return new_expense
+    new_product = Product(description=expense.description, amount=expense.amount)
+    db.add(new_product)
+    db.commit()
+    db.refresh(new_product)
+    return new_product
+
 
 
 @app.get("/amounts", status_code=status.HTTP_200_OK, response_model=list[ExpenseOut])
-def all_amounts():
-    return expenses
+def all_amounts(db:Session=Depends(get_db)):
+    # return expenses
+    mydb = db.query(Product)
+    result = mydb.all()
+    return result
 
 
 @app.get("/amounts/{amount_id}", status_code=status.HTTP_200_OK, response_model=ExpenseOut)
-def spesific_amount(amount_id: int = Path(gt=0)):
-    for expense in expenses:
-        if expense["id"] == amount_id:
-            return expense
-
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="amount not found")
+def spesific_amount(amount_id: int = Path(gt=0), db:Session=Depends(get_db)):
+    # for expense in expenses:
+    #     if expense["id"] == amount_id:
+    #         return expense
+    product = db.query(Product).filter_by(id=amount_id).one_or_none()
+    if product:
+        return product
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="amount not found")
 
 
 @app.put("/edit-amount/{amount_id}", status_code=status.HTTP_202_ACCEPTED, response_model=ExpenseOut)
-def edit_amount(amount_id: int = Path(gt=0), expense_update: ExpenseUpdate = ...):
-    for expense in expenses:
-        if expense["id"] == amount_id:
-            expense["amount"] = expense_update.amount
-            return expense
-
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="amount not found")
+def edit_amount(amount_id: int = Path(gt=0), expense_update: ExpenseUpdate = ..., db:Session=Depends(get_db)):
+    # for expense in expenses:
+    #     if expense["id"] == amount_id:
+    #         expense["amount"] = expense_update.amount
+    #         return expense
+    product = db.query(Product).filter_by(id=amount_id).one_or_none()
+    if product:
+        product.amount = expense_update.amount
+        db.commit()
+        db.refresh(product)
+        return product
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="amount not found")
 
 
 @app.delete("/delete-amount/{amount_id}", status_code=status.HTTP_200_OK, response_model=DeleteResponse)
-def delete_amount(amount_id: int = Path(gt=0)):
-    for expense in expenses:
-        if expense["id"] == amount_id:
-            expenses.remove(expense)
-            return {
-                "detail": f"amount with id {amount_id} is deleted"
-            }
-
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="amount not found")
+def delete_amount(amount_id: int = Path(gt=0), db:Session=Depends(get_db)):
+    # for expense in expenses:
+    #     if expense["id"] == amount_id:
+    #         expenses.remove(expense)
+    #         return {"detail": f"amount with id {amount_id} is deleted"}
+    product = db.query(Product).filter_by(id=amount_id).one_or_none()
+    if product:
+        db.delete(product)
+        db.commit()
+        return {"detail": f"amount with id {amount_id} is deleted"}
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="amount not found")
 
