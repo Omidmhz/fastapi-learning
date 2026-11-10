@@ -1,6 +1,5 @@
-from datetime import datetime
-from sqlalchemy.orm import backref, sessionmaker,declarative_base
-from sqlalchemy import Boolean, Column, Integer, String, Float, create_engine
+from sqlalchemy.orm import sessionmaker,declarative_base
+from sqlalchemy import create_engine
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sqlite.db"
@@ -15,14 +14,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # create base class for declaring tables
 Base = declarative_base()
-
-
-
-class Product(Base):
-    __tablename__ = "products"
-    id = Column(Integer,primary_key=True,autoincrement=True)
-    description = Column(String())
-    amount = Column(Float())
 
 
 def get_db():

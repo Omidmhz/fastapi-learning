@@ -6,8 +6,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from contextlib import asynccontextmanager
 
+from database import Base, engine, get_db
+from models import Product
 
-from database import Base, engine, get_db, Product
 from sqlalchemy.orm import Session
 
 
