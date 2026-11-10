@@ -1,0 +1,61 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="expense-db" name="Expense Manager DB Schema">
+    <mxGraphModel dx="1178" dy="639" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" parent="1" style="text;html=1;align=center;fontSize=24;fontStyle=1;fontColor=#17365D" value="Expense Manager — Database Schema &amp; Connections" vertex="1">
+          <mxGeometry height="50" width="1100" x="250" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="api" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=15;spacing=12" value="&lt;b&gt;FastAPI Application&lt;/b&gt;&lt;br&gt;project1.py&lt;br&gt;&lt;br&gt;&lt;br&gt;POST /add-amount&lt;br&gt;GET /amounts&lt;br&gt;GET /amounts/{amount_id}&lt;br&gt;PUT /edit-amount/{amount_id}&lt;br&gt;DELETE /delete-amount/{amount_id}" vertex="1">
+          <mxGeometry height="270" width="300" x="60" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="pyd" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=14;spacing=10" value="&lt;b&gt;Pydantic Models&lt;/b&gt;&lt;br&gt;ExpenseCreate&lt;br&gt;ExpenseUpdate&lt;br&gt;ExpenseOut&lt;br&gt;DeleteResponse&lt;br&gt;&lt;br&gt;&lt;br&gt;Input validation&lt;br&gt;Output serialization" vertex="1">
+          <mxGeometry height="190" width="300" x="60" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="dep" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=14;spacing=10" value="&lt;b&gt;Dependency Injection&lt;/b&gt;&lt;br&gt;Depends(get_db)&lt;br&gt;&lt;br&gt;Provides a DB session to each request" vertex="1">
+          <mxGeometry height="150" width="280" x="470" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="sess" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=14;spacing=10" value="&lt;b&gt;database.py — get_db()&lt;/b&gt;&lt;br&gt;db = SessionLocal()&lt;br&gt;yield db&lt;br&gt;db.close() in finally&lt;br&gt;&lt;br&gt;&lt;b&gt;SessionLocal&lt;/b&gt;&lt;br&gt;autocommit=False&lt;br&gt;autoflush=False" vertex="1">
+          <mxGeometry height="205" width="280" x="470" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="eng" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=14;spacing=10" value="&lt;b&gt;SQLAlchemy Engine&lt;/b&gt;&lt;br&gt;create_engine(...)&lt;br&gt;&lt;br&gt;sqlite:///./sqlite.db&lt;br&gt;check_same_thread=False" vertex="1">
+          <mxGeometry height="160" width="260" x="870" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="orm" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=14;spacing=10" value="&lt;b&gt;SQLAlchemy ORM Model&lt;/b&gt;&lt;br&gt;class Product(Base)&lt;br&gt;__tablename__ = &quot;products&quot;&lt;br&gt;&lt;br&gt;Maps Python objects to table rows" vertex="1">
+          <mxGeometry height="150" width="260" x="940" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="shape=table;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;fontSize=14;spacing=10" value="&lt;b&gt;SQLite Database&lt;/b&gt;&lt;br&gt;sqlite.db&lt;br&gt;&lt;br&gt;&lt;b&gt;Table: products&lt;/b&gt;&lt;br&gt;&lt;hr&gt;&lt;table cellpadding=&quot;6&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Column&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Type&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Constraint&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;id&lt;/td&gt;&lt;td&gt;INTEGER&lt;/td&gt;&lt;td&gt;PK, AUTOINCREMENT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;description&lt;/td&gt;&lt;td&gt;VARCHAR&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;amount&lt;/td&gt;&lt;td&gt;FLOAT&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;/tr&amp;gt&gt;&lt;/table&gt;" vertex="1">
+          <mxGeometry height="330" width="290" x="1290" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="life" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=13;spacing=10" value="&lt;b&gt;Application Lifespan&lt;/b&gt;&lt;br&gt;Base.metadata.create_all(engine)&lt;br&gt;&lt;br&gt;Creates the products table if it does not exist" vertex="1">
+          <mxGeometry height="100" width="660" x="870" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#9673A6;fontSize=12" target="pyd" value="request / response">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#D6B656;fontSize=12" target="dep" value="Depends(get_db)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="dep" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#D6B656;fontSize=12" target="sess" value="calls get_db()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="sess" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#82B366;fontSize=12" target="eng" value="bind=engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="orm" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#82B366;fontSize=12" target="db" value="ORM mapping">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="eng" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#B85450;fontSize=12" target="db" value="SQL operations">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="orm" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#82B366;fontSize=12" target="eng" value="Product(Base)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="life" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#666666;fontSize=12" target="db" value="create_all(engine)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
