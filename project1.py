@@ -15,7 +15,6 @@ from sqlalchemy.orm import Session
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Application startup")
-    Base.metadata.create_all(engine)
     yield  
     print("Application shutdown")
 
